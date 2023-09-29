@@ -1,1 +1,105 @@
-<p>data-form works!</p>
+<form class="form-horizontal" [formGroup]="formulario" (ngSubmit)="onSubmit()" >
+  <div class="form-group">
+    <div class="col-12">
+      <label for="nome" class="form-label">Nome</label>
+      <input type="text" class="form-control" formControlName="nome" id="nome"
+             placeholder="Nome" [ngClass]="aplicaCssErro('nome')">
+      <app-campo-control-erro
+        [mostrarErro]="verificaValidTouched('nome')"
+        msgErro="Nome é obrigatório"></app-campo-control-erro>
+    </div>
+  </div>
+
+  <div class="col-12">
+    <label for="email">Email</label>
+    <input type="text" class="form-control" formControlName="email" id="email"
+           placeholder="nome@email.com" [ngClass]="aplicaCssErro('email')">
+    <app-campo-control-erro
+      [mostrarErro]="verificaValidTouched('email')"
+      msgErro="Email é obrigatório"></app-campo-control-erro>
+    <app-campo-control-erro
+      [mostrarErro]="verificaEmailInvalido()"
+      msgErro="Email inválido."></app-campo-control-erro>
+  </div>
+
+  <div formGroupName="endereco">
+    <div class="row">
+      <div class="col-md-3">
+        <div class="form-group" [ngClass]="aplicaCssErro('endereco.cep')">
+          <label for="cep" class="form-label">CEP</label>
+          <input type="text" class="form-control" formControlName="cep" id="cep"
+                 (blur)="consultaCEP()">
+          <app-campo-control-erro
+            [mostrarErro]="verificaValidTouched('endereco.cep')"
+            msgErro="CEP é obrigatório"></app-campo-control-erro>
+        </div>
+      </div>
+
+      <div class="form-group col-md-3" [ngClass]="aplicaCssErro('endereco.numero')">
+        <label for="numero" class="form-label">Número</label>
+        <input type="text" class="form-control" formControlName="numero" id="numero">
+        <app-campo-control-erro
+          [mostrarErro]="verificaValidTouched('endereco.numero')"
+          msgErro="Numero é obrigatório"></app-campo-control-erro>
+      </div>
+
+      <div class="form-group col-md-6" [ngClass]="aplicaCssErro('endereco.complemento')">
+        <label for="complemento" class="form-label">Complemento</label>
+        <input type="text" class="form-control" formControlName="complemento" id="complemento">
+      </div>
+    </div>
+
+
+    <div class="col-12" [ngClass]="aplicaCssErro('endereco.rua')">
+      <label for="rua" class="form-label">Rua</label>
+      <input type="text" class="form-control" formControlName="rua" id="rua">
+      <app-campo-control-erro
+        [mostrarErro]="verificaValidTouched('endereco.rua')"
+        msgErro="Rua é obrigatório"></app-campo-control-erro>
+    </div>
+
+    <div class="row">
+      <div class="col-md-5" [ngClass]="aplicaCssErro('endereco.bairro')">
+        <label for="bairro" class="form-label">Bairro</label>
+        <input type="text" class="form-control" formControlName="bairro" id="bairro">
+        <app-campo-control-erro
+          [mostrarErro]="verificaValidTouched('endereco.bairro')"
+          msgErro="Bairro é obrigatório"></app-campo-control-erro>
+      </div>
+
+      <div class="col-md-4" [ngClass]="aplicaCssErro('endereco.cidade')">
+        <label for="cidade" class="form-label">Cidade</label>
+        <input type="text" class="form-control" formControlName="cidade" id="cidade">
+        <app-campo-control-erro
+          [mostrarErro]="verificaValidTouched('endereco.cidade')"
+          msgErro="Cidade é obrigatório"></app-campo-control-erro>
+      </div>
+
+      <div class="col-md-3" [ngClass]="aplicaCssErro('endereco.estado')">
+        <label for="estado" class="form-label">Estado</label>
+        <input type="text" class="form-control" formControlName="estado" id="estado">
+        <app-campo-control-erro
+          [mostrarErro]="verificaValidTouched('endereco.estado')"
+          msgErro="Estado é obrigatório"></app-campo-control-erro>
+      </div>
+
+    </div>
+
+
+  </div>
+
+
+  <div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+    <button class="btn" (click)="resetar()">Cancelar</button>
+  </div>
+
+  <div>
+    <app-form-debug [form]="formulario"></app-form-debug>
+  </div>
+
+
+</form>
+
+
+
