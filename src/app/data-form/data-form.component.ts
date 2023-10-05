@@ -2,6 +2,9 @@ import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {map} from "rxjs";
 import {HttpClient} from "@angular/common/http";
+import {DropdownService} from "../shared/services/dropdown.service";
+import {EstadoBr} from "../shared/models/estado-br";
+import {ConsultaCepService} from "../shared/services/consulta-cep.service";
 
 @Component({
   selector: 'app-data-form',
@@ -11,13 +14,23 @@ import {HttpClient} from "@angular/common/http";
 export class DataFormComponent implements OnInit{
   formulario!: FormGroup;
   endereco!: FormGroup;
+  estado!: EstadoBr[];
 
   constructor(
     private formBuilder: FormBuilder,
-    private http: HttpClient) {
+    private http: HttpClient,
+    private dropdownService: DropdownService,
+    private cepService: ConsultaCepService) {
   }
 
+
   ngOnInit(): void{
+
+    this.dropdownService.getEstadosBr()
+      this.dropdownService.getEstadosBr().subscribe((dados: EstadoBr[])=>{
+        this.estado = dados;
+        console.log(this.estado)
+      });
 /*    this.formulario = new FormGroup<any>({
       nome: new FormControl(null),
       email: new FormControl(null)
@@ -50,19 +63,38 @@ export class DataFormComponent implements OnInit{
   }
 
   onSubmit(){
-    console.log(this.formulario)
-    ''
-    this.http.post('https://httpbin.org/post', JSON.stringify(this.formulario.value))
-      .pipe(map((res:any)=> res)).subscribe({
-      next: data => {
-        console.log(data);
-        //this.formulario.reset()
-        this.resetar();
-      },
-      error: (error: any) => {
-        alert('erro');
+    console.log(this.formulario);
+
+    if(this.formulario.valid){
+      this.http.post('https://httpbin.org/post', JSON.stringify(this.formulario.value))
+        .pipe(map((res:any)=> res)).subscribe({
+        next: data => {
+          console.log(data);
+          //this.formulario.reset()
+          this.resetar();
+        },
+        error: (error: any) => {
+          alert('erro');
+        }
+      });
+    }else {
+      console.log('form invalid');
+      this.verificaValidacoesForm(this.formulario);
+
+    }
+
+  }
+
+  verificaValidacoesForm(formGroup: FormGroup){
+    Object.keys(formGroup.controls).forEach(campo=>{
+      console.log(campo);
+      const controle = formGroup.get(campo);
+      controle?.markAsDirty();
+      if (controle instanceof  FormGroup){
+        this.verificaValidacoesForm(controle)
       }
-    });
+    })
+
   }
 
   resetar(){
@@ -87,18 +119,21 @@ export class DataFormComponent implements OnInit{
       }
 
   consultaCEP() {
-    let cep = this.formulario.get('endereco.cep')?.value;
-    cep = cep.replace(/\D/g, "");
-    if (cep != "") {
-      var validacep = /^[0-9]{8}$/;
-      if (validacep.test(cep)) {
-       this.resetaDadosForm();
-        this.http.get(`//viacep.com.br/ws/${cep}/json/`)
-          .pipe(map((dados: any) => dados))
-          .subscribe((dados => this.populaDadosform(dados)));
+
+    const cep = this.formulario.get('endereco.cep')?.value;
+    console.log(cep);
+    debugger
+
+    if (cep != null && !cep.isEmpty) {debugger
+      this.cepService.consultaCEP(cep)?.subscribe((dados:any) => {
+        debugger
+        this.populaDadosform(dados);
+
+      });
+
       }
     }
-  }
+
 
   populaDadosform(dados: any) {
     this.formulario.patchValue({
