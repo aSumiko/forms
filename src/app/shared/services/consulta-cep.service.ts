@@ -12,7 +12,6 @@ export class ConsultaCepService {
   consultaCEP(cep: string) {
     console.log(cep);
     cep = cep.replace(/\D/g, "");
-    debugger
     if (cep !== "") {
       const validacep = /^[0-9]{8}$/;
 
