@@ -28,25 +28,38 @@ export class FormValidations {
   }
 
   static equalsTo (otherField: string){
-    const validator =  (formControl: FormControl) => {
-        if (otherField == null) {
-          throw new Error('É necessário informar um campo');
-        }
+    const validator: ValidatorFn =  (formControl: AbstractControl) => {
+      if (otherField == null) {
+        throw new Error('É necessário informar um campo');
+      }
 
-        if (!formControl.root || !(<FormGroup>formControl.root).controls) {
-          return null;
-        }
-
-        const field = (<FormGroup>formControl.root).get(otherField);
-        if (!field) {
-          throw new Error('É necessário informar um campo válido');
-        }
-        if (field.value !== formControl.value) {
-          return {equalsTo: true};
-        }
+      if (!formControl.root || !(<FormGroup>formControl.root).controls) {
         return null;
+      }
+
+      const field = (<FormGroup>formControl.root).get(otherField);
+      if (!field) {
+        throw new Error('É necessário informar um campo válido');
+      }
+      if (field.value !== formControl.value) {
+        return {equalsTo: true};
+      }
+      return null;
     };
-      return validator;
+    return validator;
+  }
+
+  static getErrorMsg(fieldName: string, validatorName: string, validatorValue: any){
+    const config: {[key:string]:any} = {
+      'required':`${fieldName} é obrigatório.`,
+      'minlength': `${fieldName} precisa ter de no mínimo ${validatorValue.requiredLength} caracteres.`,
+      'maxlength': `${fieldName} precisa ter de no máximo ${validatorValue.requiredLength} caracteres.`,
+      'cepInvalido': 'CEP inválido.',
+      'emailInvalido': 'Email já cadastrado!',
+      'equalTo': 'Campos não são iguais',
+      'pattern': 'Campo Inválido'
+    };
+    return config[validatorName];
   }
 
 }
